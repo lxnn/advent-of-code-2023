@@ -2,7 +2,6 @@ from collections.abc import Iterable
 from itertools import tee, islice, chain, pairwise
 import re
 import sys
-import math
 
 Vector = complex
 
@@ -85,7 +84,7 @@ def draw_outline(instructions: list[Vector]) -> list[Point]:
 
 
 def dot(u: Vector, v: Vector) -> float:
-    return (u.conjugate() * v.conjugate()).real
+    return (u.conjugate() * v).real
 
 
 def cross(u: Vector, v: Vector) -> float:
@@ -100,11 +99,6 @@ def triangle_contains(triangle: tuple[Point, Point, Point], point: Point) -> boo
     return all(
         cross(b - a, point - a) >= 0 for (a, b) in pairwise(triangle + triangle[:1])
     )
-
-
-def corner_angle(corner: tuple[Point, Point, Point]) -> float:
-    a, b, c = corner
-    return math.acos(dot(a - b, c - b) / (abs(a - b) * abs(c - b)))
 
 
 def triangulate(polygon: Iterable[Point]) -> Iterable[Triangle]:
