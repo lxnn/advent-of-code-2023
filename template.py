@@ -19,12 +19,5 @@ def part2(raw: str):
     ...
 
 
-def ints(string: str, *, negatives: bool = False) -> list[int]:
-    if negatives:
-        return list(map(int, re.findall(r"-?[0-9]+", string)))
-    else:
-        return list(map(int, re.findall(r"[0-9]+", string)))
-
-
 if __name__ == "__main__":
     raise SystemExit(main())
