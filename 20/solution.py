@@ -1,6 +1,7 @@
 import sys
 import re
 import collections
+import math
 
 
 def main():
@@ -32,7 +33,28 @@ def part1(raw: str):
 
 def part2(raw: str):
     print(to_dot(raw))
-    ...  # solved by hand by looking at graph
+    ...  # look at graph
+    modules = parse(raw)
+    result = 1
+    for starting_node in modules["broadcaster"][1]:
+        conjunction = next(
+            dest 
+            for dest in modules[starting_node][1]
+            if modules[dest][0] == "&"
+        )
+        number = 0
+        node = starting_node
+        place = 0
+        while True:
+            number |= (conjunction in modules[node][1]) << place
+            place += 1
+            successors = set(modules[node][1]) - {conjunction}
+            if not successors:
+                break
+            (node,) = successors
+        print(starting_node, number)
+        result = math.lcm(result, number)
+    return result
 
 
 def step(modules: dict[str, Module], state: State) -> list[tuple[str, bool, str]]:
@@ -90,7 +112,7 @@ def source_graph(modules: dict[str, Module]) -> dict[str, set[str]]:
     return dict(sources)
 
 
-def parse(raw: str) -> dict[str, tuple[str, list[str]]]:
+def parse(raw: str) -> dict[str, Module]:
     modules = {}
     for line in raw.strip().splitlines():
         match = re.match(r"([%&]?)([a-z]+) -> (.+)", line)
@@ -114,7 +136,7 @@ def to_dot(raw: str) -> str:
             lines.append(f"{name} [color=red]")
         else:
             lines.append(f"{name} [color=green]")
-    return f"{{ {'\n'.join(lines)} }}"
+    return f"digraph G {{\n\t{'\n\t'.join(lines)}\n}}"
 
 
 if __name__ == "__main__":
